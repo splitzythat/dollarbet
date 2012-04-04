@@ -11,6 +11,7 @@ group :production, :staging do
 end
 
 group :development, :test do
+  gem 'rspec-rails', '~> 2.6'
   gem 'sqlite3'
 end
 
