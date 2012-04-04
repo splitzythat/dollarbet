@@ -11,7 +11,29 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120404220908) do
+ActiveRecord::Schema.define(:version => 20120404231154) do
+
+  create_table "bet_states", :force => true do |t|
+    t.string   "state_name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "bets", :force => true do |t|
+    t.integer  "amount_in_cents"
+    t.text     "description"
+    t.integer  "opponent_id"
+    t.integer  "creator_id"
+    t.integer  "winner_id"
+    t.integer  "bet_state_id"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+  end
+
+  add_index "bets", ["bet_state_id"], :name => "index_bets_on_bet_state_id"
+  add_index "bets", ["creator_id"], :name => "index_bets_on_creator_id"
+  add_index "bets", ["opponent_id"], :name => "index_bets_on_opponent_id"
+  add_index "bets", ["winner_id"], :name => "index_bets_on_winner_id"
 
   create_table "users", :force => true do |t|
     t.string   "name"
