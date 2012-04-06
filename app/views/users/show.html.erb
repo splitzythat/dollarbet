@@ -1,3 +1,5 @@
 <h1>Dashboard</h1>
 
 <p>Hello <%= @user.name %> dollar bet with us please!!</p>
+
+<%= button_to "Create Bet", {:controller => "bets", :action => "new"}, {:method => :get} %>

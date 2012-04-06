@@ -15,5 +15,5 @@
 /tmp
 
 .DS_Store
-db/.DS_Store
+/db/.DS_Store
 *.swp

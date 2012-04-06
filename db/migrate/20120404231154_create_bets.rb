@@ -6,13 +6,14 @@ class CreateBets < ActiveRecord::Migration
       t.references :opponent
       t.references :creator
       t.references :winner
-      t.references :bet_state
+      t.string :bet_state_name
+      t.datetime :accepted_at
+      t.datetime :completed_at
 
       t.timestamps
     end
     add_index :bets, :opponent_id
     add_index :bets, :creator_id
     add_index :bets, :winner_id
-    add_index :bets, :bet_state_id
   end
 end

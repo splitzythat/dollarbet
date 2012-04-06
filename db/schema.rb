@@ -25,12 +25,13 @@ ActiveRecord::Schema.define(:version => 20120404231154) do
     t.integer  "opponent_id"
     t.integer  "creator_id"
     t.integer  "winner_id"
-    t.integer  "bet_state_id"
+    t.string   "bet_state_name"
+    t.datetime "accepted_at"
+    t.datetime "completed_at"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
   end
 
-  add_index "bets", ["bet_state_id"], :name => "index_bets_on_bet_state_id"
   add_index "bets", ["creator_id"], :name => "index_bets_on_creator_id"
   add_index "bets", ["opponent_id"], :name => "index_bets_on_opponent_id"
   add_index "bets", ["winner_id"], :name => "index_bets_on_winner_id"
