@@ -25,7 +25,7 @@ class Bet < ActiveRecord::Base
     end
 
     event :one_player_wants_to_end_bet do
-      transitions :to => :settling, :from => :accepted
+      transitions :to => :settling, :from => [:accepted, :incomplete]
     end
 
     event :both_players_agree_to_end_bet do
@@ -43,19 +43,26 @@ class Bet < ActiveRecord::Base
   aasm_initial_state :proposing
 
   def set_accepted_date
-    accepted_at = Time.now
+    self.accepted_at = Time.now
+    self.save!
   end
 
   def set_completed_date
-    completed_at = Time.now
+    self.completed_at = Time.now
+    self.save!
   end
 
-  def set_completed_date
-    winner = nil
+  def unset_winner
+    self.winner = nil
+    self.save!
   end
 
   def set_old_to_expired
     date_to_check = proposing? ? accepted_at : created_at
     set_expired! if (date_to_check + EXPIRATION_DAYS.days) < Time.now
+  end
+
+  def is_owner?(user)
+    creator == user
   end
 end

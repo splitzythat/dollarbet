@@ -2,4 +2,72 @@
 
 <p>Hello <%= @user.name %> dollar bet with us please!!</p>
 
-<%= button_to "Create Bet", {:controller => "bets", :action => "new"}, {:method => :get} %>
+<%= button_to "Create Bet", new_bet_path, {:method => :get} %>
+
+<h3>Bets Requiring Action</h3>
+<table id="bets_requiring_action">
+<% @user.bets.select { |b| (b.proposing? && !b.is_owner?(@user)) || (b.rejected? && b.is_owner?(@user)) || (b.settling? && !b.is_owner?(@user)) || b.incomplete? }.each do |bet| %>
+  <tr>
+    <td><%= bet.opponent.name %></td>
+    <% if bet.proposing? %>
+      <td>This opponent wants to bet you</td>
+      <td><%= bet_button(bet, "Accept") %></td>
+      <td><%= bet_button(bet, "Reject") %></td>
+    <% elsif bet.rejected? %>
+      <td>Opponent did not like bet</td>
+      <td><%= bet_button(bet, "Edit") %></td>
+      <td><%= bet_button(bet, "Delete") %></td>
+    <% elsif bet.settling? %>
+      <td>So who won?</td>
+      <td><%= bet_button(bet, "You", "set_winner", {:winner_id => @user.id}) %></td>
+      <% other_player = bet.is_owner?(@user) ? bet.opponent : bet.creator %>
+      <td><%= bet_button(bet, other_player.name, "set_winner", {:winner_id => other_player.id}) %></td>
+    <% elsif bet.incomplete? %>
+      <% if bet.is_owner?(@user) %>
+        <td>You ended the bet, but the opponent did not, so who won?</td>
+        <td><%= bet_button(bet, "You", "set_winner", {:winner_id => @user.id}) %></td>
+        <% other_player = bet.is_owner?(@user) ? bet.opponent : bet.creator %>
+        <td><%= bet_button(bet, other_player.name, "set_winner", {:winner_id => other_player.id}) %></td>
+      <% else %>
+        <td>Waiting for opponent to correct mistake...</td>
+        <td></td>
+        <td></td>
+      <% end %>
+    <% end %>
+  </tr>
+<% end %>
+</table>
+
+<h3>Active Bets</h3>
+<table id="active_bets">
+<% @user.bets.select { |b| (b.proposing? && b.is_owner?(@user)) || b.accepted? || (b.settling? && b.is_owner?(@user)) }.each do |bet| %>
+  <tr>
+    <td><%= bet.opponent.name %></td>
+    <% if bet.proposing? || bet.settling? %>
+      <td><%= "Waiting for Response..." %></td>
+      <td></td>
+      <td></td>
+    <% elsif bet.accepted? %>
+      <% if bet.is_owner?(@user) %>
+        <td>So who won?</td>
+        <td><%= bet_button(bet, "You", "set_winner", {:winner_id => @user.id}) %></td>
+        <% other_player = bet.is_owner?(@user) ? bet.opponent : bet.creator %>
+        <td><%= bet_button(bet, other_player.name, "set_winner", {:winner_id => other_player.id}) %></td>
+      <% else %>
+        <td></td>
+        <td></td>
+      <% end %>
+    <% end %>
+  </tr>
+<% end %>
+</table>
+
+<h3>Completed Bets</h3>
+<table id="completed_bets">
+<% @user.bets.select { |b| b.completed? }.each do |bet| %>
+  <tr>
+    <td><%= bet.opponent.name %></td>
+    <td>The winner was: <%= (bet.winner == @user) ? "You" : bet.winner.name %></td>
+  </tr>
+<% end %>
+</table>
